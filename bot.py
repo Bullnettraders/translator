@@ -3,13 +3,12 @@ from discord.ext import commands
 from googletrans import Translator
 import os
 
-# Bot-Token aus Umgebungsvariablen lesen
+# Token und Channel-ID aus Umgebungsvariablen
 TOKEN = os.getenv('DISCORD_TOKEN')
+ALLOWED_CHANNEL_ID = int(os.getenv('TRANSLATE_CHANNEL_ID'))
 
-# Translator initialisieren
 translator = Translator()
 
-# Bot definieren
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -18,10 +17,15 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(f'Bot ist online als {bot.user}')
+    print(f'Aktiver Channel: {ALLOWED_CHANNEL_ID}')
 
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
+        return
+
+    # Nur in dem erlaubten Channel übersetzen
+    if message.channel.id != ALLOWED_CHANNEL_ID:
         return
 
     try:
