@@ -3,7 +3,7 @@ from discord.ext import commands
 from googletrans import Translator
 import os
 
-# Token und Channel-ID aus Umgebungsvariablen
+# Token und Channel-ID aus Railway-Umgebungsvariablen
 TOKEN = os.getenv('DISCORD_TOKEN')
 ALLOWED_CHANNEL_ID = int(os.getenv('TRANSLATE_CHANNEL_ID'))
 
@@ -19,12 +19,21 @@ async def on_ready():
     print(f'Bot ist online als {bot.user}')
     print(f'Aktiver Channel: {ALLOWED_CHANNEL_ID}')
 
+    # Testnachricht senden
+    channel = bot.get_channel(ALLOWED_CHANNEL_ID)
+    if channel:
+        try:
+            await channel.send("✅ Übersetzungs-Bot ist bereit! (Nur englische Nachrichten werden übersetzt.)")
+        except Exception as e:
+            print(f"Fehler beim Senden der Startnachricht: {e}")
+    else:
+        print("❌ Channel nicht gefunden – prüfe die Channel-ID!")
+
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
 
-    # Nur in dem erlaubten Channel übersetzen
     if message.channel.id != ALLOWED_CHANNEL_ID:
         return
 
